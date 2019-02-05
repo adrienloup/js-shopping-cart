@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Shopping Cart JS</title>
+	<style>:root{font:14px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol}</style>
+</head>
+<body>
+	<div>
+		<ul>
+			<li><a href="#" data-item data-name="Lassi pomegranate" data-price="1.10" data-stock="2">Lassi pomegranate $1.10 Available 2</a></li>
+			<li><a href="#" data-item data-name="Pao de lo delicious" data-price="2.80" data-stock="4">Pao de lo delicious $2.80 Available 4</a></a></li>
+			<li><a href="#" data-item data-name="Savory baklawa" data-price="0.80" data-stock="2">Savory baklawa $0.80 Available 2</a></li>
+			<li><a href="#" data-item data-name="Creamy tiramisu" data-price="2.40" data-stock="2">Creamy tiramisu $2.40 Available 2</a></li>
+			<li><a href="#" data-item data-name="Meli-melo cake" data-price="1.20" data-stock="4">Meli-melo cake $1.20 Available 4</a></li>
+		</ul>
+	</div>
+	<div>
+		<button id="clear">Clear</button>
+		<ul id="cart">
+			<li></li>
+		</ul>
+		<div id="quantity"></div>
+		<div id="cost"></div>
+	</div>
+	<script src="../shopping-cart.js"></script>
+	<script>
+
+		const $tab = document.querySelectorAll('[data-item]')
+		const $cart = document.getElementById('cart')
+		const $clear = document.getElementById('clear')
+		const $cost = document.getElementById('cost')
+		const $quantity = document.getElementById('quantity')
+
+		for (let i = 0, l = $tab.length; i < l; i++) {
+			$tab[i].addEventListener('click', onClickTab, false)
+		}
+
+		$cart.addEventListener('click', onClickCart, false)
+		$clear.addEventListener('click', onClickClear, false)
+
+		function onClickTab(e) {
+			e.preventDefault()
+			let name = this.getAttribute('data-name')
+			let price = Number(this.getAttribute('data-price'))
+			let stock = Number(this.getAttribute('data-stock'))
+			ShoppingCart.add(name, price, 1, stock)
+			showShoppingCart()
+		}
+
+		function onClickCart(e) {
+			if (e.target !== e.currentTarget) {
+				let name = e.target.getAttribute('data-name')
+				if (e.target.classList.contains('add')) ShoppingCart.add(name, 0, 1)
+				if (e.target.classList.contains('remove')) ShoppingCart.remove(name)
+				if (e.target.classList.contains('delete')) ShoppingCart.removeAll(name)
+				showShoppingCart()
+			}	
+			e.stopPropagation()
+		}
+
+		function onClickClear(e) {
+			e.preventDefault()
+			ShoppingCart.clear()
+			showShoppingCart()
+		}
+
+		function showShoppingCart() {
+			let list = ShoppingCart.list()
+			let item = ""
+			for (let i in list) {
+				item += '<li>'
+					+list[i].name
+					+' '+list[i].count
+					+' = '+list[i].total
+					+' <button class="add" data-name="'+list[i].name+'">Add</button> '
+					+' <button class="remove" data-name="'+list[i].name+'">Remove</button> '
+					+' <button class="delete" data-name="'+list[i].name+'">Delete</button> '
+					+'</li>'
+			}
+			$cart.innerHTML = item
+			$quantity.innerHTML = ShoppingCart.quantity()
+			$cost.innerHTML = '$' + ShoppingCart.cost()
+		}
+
+		showShoppingCart()
+
+	</script>
+</body>
+</html>
